@@ -24,7 +24,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Menu implements InventoryHolder, Identifiable {
     
-    final String id;
+    final String menuId;
     final UUID uniqueId = generateUniqueId();
     Component title;
     final Inventory inventory;
@@ -39,13 +39,13 @@ public class Menu implements InventoryHolder, Identifiable {
     }
 
     public Menu(String id, Component title, int rows) {
-        this.id = id;
+        this.menuId = id;
         this.title = title;
         this.inventory = Bukkit.createInventory(this, rows * 9, title);
     }
 
     public Menu(String id, Component title, InventoryType type) {
-        this.id = id;
+        this.menuId = id;
         this.title = title;
         this.inventory = Bukkit.createInventory(this, type, title);
     }
@@ -123,7 +123,7 @@ public class Menu implements InventoryHolder, Identifiable {
 
     @Override
     public @NotNull String getName() {
-        return id;
+        return menuId;
     }
 
     @Override
