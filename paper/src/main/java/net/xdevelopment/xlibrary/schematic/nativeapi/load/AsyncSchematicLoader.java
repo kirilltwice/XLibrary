@@ -1,24 +1,28 @@
 package net.xdevelopment.xlibrary.schematic.nativeapi.load;
 
 import com.google.gson.Gson;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import net.xdevelopment.xlibrary.schematic.nativeapi.data.JsonSchematicData;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
-public class AsyncSchematicLoader {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public final class AsyncSchematicLoader {
 
-    private final Plugin plugin;
-    private final Gson gson;
-    private final int pasteTransactionSize;
+    Plugin plugin;
+    Gson gson;
+    int pasteTransactionSize;
 
-    public void loadAndPaste(File file, Location location, CompletableFuture<Object> completion) {
+    public void loadAndPaste(@NotNull File file, @NotNull Location location, @NotNull CompletableFuture<Object> completion) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 if (!file.exists()) {
@@ -26,15 +30,15 @@ public class AsyncSchematicLoader {
                     return;
                 }
 
-                String json = Files.readString(file.toPath());
-                JsonSchematicData data = gson.fromJson(json, JsonSchematicData.class);
+                final String json = Files.readString(file.toPath());
+                final JsonSchematicData data = gson.fromJson(json, JsonSchematicData.class);
 
                 if (data.blocks() == null || data.blocks().isEmpty()) {
                     completion.complete(null);
                     return;
                 }
 
-                TerritoryPasteTransaction transaction = new TerritoryPasteTransaction(
+                final TerritoryPasteTransaction transaction = new TerritoryPasteTransaction(
                         plugin, location, data.blocks(), pasteTransactionSize
                 );
 

@@ -17,7 +17,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class NativeSchematicProvider implements SchematicProvider {
+public final class NativeSchematicProvider implements SchematicProvider {
 
     Plugin plugin;
     Gson gson;
@@ -43,7 +43,7 @@ public class NativeSchematicProvider implements SchematicProvider {
     @Override
     @NotNull
     public CompletableFuture<Object> paste(@NotNull File file, @NotNull Location location) {
-        CompletableFuture<Object> future = new CompletableFuture<>();
+        final CompletableFuture<Object> future = new CompletableFuture<>();
         new AsyncSchematicLoader(plugin, gson, pasteTransactionSize).loadAndPaste(file, location, future);
         return future;
     }
@@ -51,7 +51,7 @@ public class NativeSchematicProvider implements SchematicProvider {
     @Override
     @NotNull
     public CompletableFuture<File> save(@NotNull File file, @NotNull Location corner1, @NotNull Location corner2, boolean ignoreAir) {
-        CompletableFuture<File> future = new CompletableFuture<>();
+        final CompletableFuture<File> future = new CompletableFuture<>();
 
         new TerritorySaveTransaction(
                 plugin, gson, file, corner1, corner2, ignoreAir, saveTransactionSize
@@ -63,9 +63,8 @@ public class NativeSchematicProvider implements SchematicProvider {
     @Override
     @NotNull
     public CompletableFuture<Void> undo(@NotNull Object session) {
-        if (session instanceof TerritoryPasteTransaction tx) {
-            return tx.undo();
-        }
-        return CompletableFuture.completedFuture(null);
+        return session instanceof TerritoryPasteTransaction transaction
+                ? transaction.undo()
+                : CompletableFuture.completedFuture(null);
     }
 }

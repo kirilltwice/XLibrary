@@ -33,15 +33,15 @@ public abstract class ArgumentCommand implements CommandExecutor, Identifiable {
     Map<String, ArgumentCommand> argumentCommands = new HashMap<>();
 
     protected ArgumentCommand() {
-        var clazz = getClass();
+        final var clazz = getClass();
 
-        var argumentAnnotation = clazz.getAnnotation(CommandArgument.class);
+        final var argumentAnnotation = clazz.getAnnotation(CommandArgument.class);
         if (argumentAnnotation == null) {
             throw new IllegalStateException(clazz.getSimpleName() + " must be annotated with @CommandArgument");
         }
         this.name = argumentAnnotation.value();
 
-        var permissionAnnotation = clazz.getAnnotation(CommandPermission.class);
+        final var permissionAnnotation = clazz.getAnnotation(CommandPermission.class);
         this.permission = permissionAnnotation != null ? permissionAnnotation.value() : null;
     }
 

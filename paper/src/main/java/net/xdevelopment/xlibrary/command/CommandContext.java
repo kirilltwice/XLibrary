@@ -1,30 +1,37 @@
 package net.xdevelopment.xlibrary.command;
 
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.xdevelopment.xlibrary.utility.ColorUtility;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
 /**
  * @author Anyachkaa
  */
-public record CommandContext(CommandSender sender,
-                             String name,
-                             int argumentOffset,
-                             String[] arguments) implements ArgumentProvider {
+public record CommandContext(
+        @NotNull CommandSender sender,
+        @NotNull String name,
+        int argumentOffset,
+        @NotNull String[] arguments,
+        @Nullable CommandSourceStack sourceStack
+) implements ArgumentProvider {
 
     public CommandContext(
             @NotNull CommandSender sender,
             @NotNull String name,
             int argumentOffset,
-            @NotNull String[] arguments
+            @NotNull String[] arguments,
+            @Nullable CommandSourceStack sourceStack
     ) {
         this.sender = sender;
         this.name = name;
         this.argumentOffset = argumentOffset;
         this.arguments = arguments;
+        this.sourceStack = sourceStack;
     }
 
     CommandContext(
@@ -32,11 +39,40 @@ public record CommandContext(CommandSender sender,
             @NotNull String name,
             @NotNull String[] arguments
     ) {
-        this(sender, name, 0, arguments);
+        this(sender, name, 0, arguments, null);
+    }
+
+    CommandContext(
+            @NotNull CommandSourceStack sourceStack,
+            @NotNull String name,
+            int argumentOffset,
+            @NotNull String[] arguments
+    ) {
+        this(sourceStack.getSender(), name, argumentOffset, arguments, sourceStack);
+    }
+
+    CommandContext(
+            @NotNull CommandSourceStack sourceStack,
+            @NotNull String name,
+            @NotNull String[] arguments
+    ) {
+        this(sourceStack, name, 0, arguments);
     }
 
     public boolean isPlayer() {
         return sender instanceof Player;
+    }
+
+    public boolean hasSourceStack() {
+        return sourceStack != null;
+    }
+
+    @NotNull
+    public CommandSourceStack getSourceStack() {
+        if (sourceStack == null) {
+            throw new IllegalStateException("CommandSourceStack is not available");
+        }
+        return sourceStack;
     }
 
     @NotNull
@@ -48,6 +84,7 @@ public record CommandContext(CommandSender sender,
     }
 
     @Override
+    @NotNull
     public String getArgument(int i) {
         return arguments[i + argumentOffset];
     }

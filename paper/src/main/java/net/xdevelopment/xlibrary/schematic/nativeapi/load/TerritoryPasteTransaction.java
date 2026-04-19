@@ -11,13 +11,14 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class TerritoryPasteTransaction {
+public final class TerritoryPasteTransaction {
 
     Plugin plugin;
     Location origin;
@@ -25,20 +26,24 @@ public class TerritoryPasteTransaction {
     int maxOperationsPerTick;
 
     List<UndoEntry> undoEntries = new ArrayList<>();
-    
-    @Getter 
-    @NonFinal 
+
+    @Getter
+    @NonFinal
     int batchIndex = 0;
 
-    public TerritoryPasteTransaction(Plugin plugin, Location origin,
-                                     List<WorldBlock> blocks, int maxOperationsPerTick) {
+    public TerritoryPasteTransaction(
+            @NotNull Plugin plugin,
+            @NotNull Location origin,
+            @NotNull List<WorldBlock> blocks,
+            int maxOperationsPerTick
+    ) {
         this.plugin = plugin;
         this.origin = origin;
         this.maxOperationsPerTick = maxOperationsPerTick;
         this.batches = CollectionUtility.split(blocks, maxOperationsPerTick);
     }
 
-    public void start(CompletableFuture<Object> completion) {
+    public void start(@NotNull CompletableFuture<Object> completion) {
         Bukkit.getScheduler().runTask(plugin, () -> process(completion));
     }
 
@@ -48,13 +53,13 @@ public class TerritoryPasteTransaction {
             return;
         }
 
-        World world = origin.getWorld();
-        int mx = origin.getBlockX();
-        int my = origin.getBlockY();
-        int mz = origin.getBlockZ();
+        final World world = origin.getWorld();
+        final int mx = origin.getBlockX();
+        final int my = origin.getBlockY();
+        final int mz = origin.getBlockZ();
 
-        for (WorldBlock wb : batches.get(batchIndex)) {
-            Block block = world.getBlockAt(mx - wb.dx(), my - wb.dy(), mz - wb.dz());
+        for (final WorldBlock wb : batches.get(batchIndex)) {
+            final Block block = world.getBlockAt(mx - wb.dx(), my - wb.dy(), mz - wb.dz());
 
             undoEntries.add(new UndoEntry(
                     block.getX(), block.getY(), block.getZ(),
@@ -73,8 +78,8 @@ public class TerritoryPasteTransaction {
     }
 
     public CompletableFuture<Void> undo() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        List<List<UndoEntry>> undoBatches = CollectionUtility.split(undoEntries, maxOperationsPerTick);
+        final CompletableFuture<Void> future = new CompletableFuture<>();
+        final List<List<UndoEntry>> undoBatches = CollectionUtility.split(undoEntries, maxOperationsPerTick);
         Bukkit.getScheduler().runTask(plugin, () -> undoProcess(future, undoBatches, 0));
         return future;
     }
@@ -86,14 +91,14 @@ public class TerritoryPasteTransaction {
             return;
         }
 
-        World world = origin.getWorld();
+        final World world = origin.getWorld();
 
-        for (UndoEntry entry : undoBatches.get(index)) {
-            Block block = world.getBlockAt(entry.x, entry.y, entry.z);
+        for (final UndoEntry entry : undoBatches.get(index)) {
+            final Block block = world.getBlockAt(entry.x, entry.y, entry.z);
             block.setBlockData(Bukkit.createBlockData(entry.blockData), false);
         }
 
-        int next = index + 1;
+        final int next = index + 1;
         if (next >= undoBatches.size()) {
             undoEntries.clear();
             completion.complete(null);

@@ -1,28 +1,34 @@
 package net.xdevelopment.xlibrary.schematic.selection;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import net.xdevelopment.xlibrary.core.Identifiable;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 @Getter
 @Setter
-public class PlayerSelection implements Identifiable {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public final class PlayerSelection implements Identifiable {
 
-    private final UUID uniqueId = generateUniqueId();
-    private Location pos1;
-    private Location pos2;
+    final UUID uniqueId = generateUniqueId();
+    @Nullable
+    Location pos1;
+    @Nullable
+    Location pos2;
 
     @Override
-    public @org.jetbrains.annotations.NotNull String getName() {
+    public @NotNull String getName() {
         return "Selection-" + uniqueId;
     }
 
     @Override
-    public @org.jetbrains.annotations.NotNull UUID getUniqueId() {
+    public @NotNull UUID getUniqueId() {
         return uniqueId;
     }
 

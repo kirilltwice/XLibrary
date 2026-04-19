@@ -1,5 +1,7 @@
 package net.xdevelopment.xlibrary.utility.gui;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import net.xdevelopment.xlibrary.core.collection.ExpiringSet;
 import net.xdevelopment.xlibrary.utility.gui.executable.ExecutableClick;
 import net.xdevelopment.xlibrary.utility.gui.slot.MenuSlot;
@@ -13,8 +15,9 @@ import org.bukkit.inventory.Inventory;
 import java.util.UUID;
 
 @SuppressWarnings("UnstableApiUsage")
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MenuListener implements Listener {
-    private static final ExpiringSet<UUID> throttled = new ExpiringSet<>(100L);
+    static ExpiringSet<UUID> throttled = new ExpiringSet<>(100L);
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onClick(InventoryClickEvent event) {

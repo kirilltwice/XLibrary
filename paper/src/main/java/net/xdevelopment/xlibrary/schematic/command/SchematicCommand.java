@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ import java.util.UUID;
 @CommandName("schematic")
 @CommandPermission("xlibrary.schematic.use")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class SchematicCommand extends Command {
+public final class SchematicCommand extends Command {
 
     SchematicManager manager;
     SelectionListener selectionListener;
@@ -51,6 +50,23 @@ public class SchematicCommand extends Command {
         addArgument(new ConvertArgument());
     }
 
+    @NotNull
+    private File getSchematicFile(@NotNull String name) {
+        return new File(schematicsFolder, name + ".json");
+    }
+
+    @NotNull
+    private List<String> getSchematicNames() {
+        final File[] files = schematicsFolder.listFiles((dir, fileName) -> fileName.endsWith(".json"));
+        if (files == null) {
+            return List.of();
+        }
+        return Arrays.stream(files)
+                .map(File::getName)
+                .map(fileName -> fileName.substring(0, fileName.length() - ".json".length()))
+                .toList();
+    }
+
     @Override
     public void execute(@NotNull CommandContext context) {
         context.sendMessage(SchematicMessages.HELP_HEADER);
@@ -63,10 +79,10 @@ public class SchematicCommand extends Command {
 
     @CommandName("wand")
     @OnlyPlayer
-    class WandArgument extends ArgumentCommand {
+    final class WandArgument extends ArgumentCommand {
         @Override
         public void execute(CommandContext context) {
-            Player player = context.getPlayer();
+            final Player player = context.getPlayer();
             player.getInventory().addItem(new ItemStack(SelectionListener.WAND_MATERIAL));
             context.sendMessage(SchematicMessages.WAND_GIVE);
             context.sendMessage(SchematicMessages.WAND_LEFT);
@@ -75,7 +91,7 @@ public class SchematicCommand extends Command {
 
     @CommandName("save")
     @OnlyPlayer
-    class SaveArgument extends ArgumentCommand {
+    final class SaveArgument extends ArgumentCommand {
         @Override
         public void execute(CommandContext context) {
             if (context.argumentCount() < 1) {
@@ -83,15 +99,15 @@ public class SchematicCommand extends Command {
                 return;
             }
 
-            Player player = context.getPlayer();
-            PlayerSelection selection = selectionListener.getSelection(player);
+            final Player player = context.getPlayer();
+            final PlayerSelection selection = selectionListener.getSelection(player);
             if (selection == null || !selection.isComplete()) {
                 context.sendMessage(SchematicMessages.NO_SELECTION);
                 return;
             }
 
-            String name = context.getArgument(0);
-            File file = new File(schematicsFolder, name + ".json");
+            final String name = context.getArgument(0);
+            final File file = getSchematicFile(name);
 
             context.sendMessage(SchematicMessages.SAVE_START, Map.of("name", name));
 
@@ -106,7 +122,7 @@ public class SchematicCommand extends Command {
 
     @CommandName("paste")
     @OnlyPlayer
-    class PasteArgument extends ArgumentCommand {
+    final class PasteArgument extends ArgumentCommand {
         @Override
         public void execute(CommandContext context) {
             if (context.argumentCount() < 1) {
@@ -114,8 +130,8 @@ public class SchematicCommand extends Command {
                 return;
             }
 
-            String name = context.getArgument(0);
-            File file = new File(schematicsFolder, name + ".json");
+            final String name = context.getArgument(0);
+            final File file = getSchematicFile(name);
 
             if (!file.exists()) {
                 context.sendMessage(SchematicMessages.NO_FILE, Map.of("name", name));
@@ -138,13 +154,7 @@ public class SchematicCommand extends Command {
         @Override
         public List<String> tabComplete(@NotNull CommandContext context) {
             if (context.argumentCount() == 1) {
-                File[] files = schematicsFolder.listFiles((dir, fName) -> fName.endsWith(".json"));
-                if (files == null) return Collections.emptyList();
-
-                List<String> names = Arrays.stream(files)
-                        .map(f -> f.getName().replace(".json", ""))
-                        .toList();
-                return CollectionUtility.getSequentialMatches(names, context.getArgument(0));
+                return CollectionUtility.getSequentialMatches(getSchematicNames(), context.getArgument(0));
             }
             return super.tabComplete(context);
         }
@@ -152,11 +162,11 @@ public class SchematicCommand extends Command {
 
     @CommandName("undo")
     @OnlyPlayer
-    class UndoArgument extends ArgumentCommand {
+    final class UndoArgument extends ArgumentCommand {
         @Override
         public void execute(CommandContext context) {
-            Player player = context.getPlayer();
-            Object session = lastSessions.remove(player.getUniqueId());
+            final Player player = context.getPlayer();
+            final Object session = lastSessions.remove(player.getUniqueId());
             if (session == null) {
                 context.sendMessage(SchematicMessages.UNDO_FAIL);
                 return;
@@ -172,7 +182,7 @@ public class SchematicCommand extends Command {
     }
 
     @CommandName("convert")
-    class ConvertArgument extends ArgumentCommand {
+    final class ConvertArgument extends ArgumentCommand {
         public ConvertArgument() {
             addArgument(new ConvertSchematicArgument());
         }
@@ -184,13 +194,13 @@ public class SchematicCommand extends Command {
     }
 
     @CommandName("schematic")
-    class ConvertSchematicArgument extends ArgumentCommand {
+    final class ConvertSchematicArgument extends ArgumentCommand {
         @Override
         public void execute(CommandContext context) {
             context.sendMessage(SchematicMessages.CONVERT_START);
 
             try {
-                int count = SchematicConverter.convertAll(schematicsFolder);
+                final int count = SchematicConverter.convertAll(schematicsFolder);
                 if (count == 0) {
                     context.sendMessage(SchematicMessages.CONVERT_EMPTY);
                 } else {

@@ -1,6 +1,8 @@
 package net.xdevelopment.xlibrary.core.time;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
 
@@ -8,14 +10,15 @@ import java.time.Duration;
 
 // Adapted and improved from: https://github.com/BlackBaroness/duration-serializer-java
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public abstract class StaticDurationFormat implements DurationFormat {
 
-    private final String nanosecondsFormat;
-    private final String millisecondsFormat;
-    private final String secondsFormat;
-    private final String minutesFormat;
-    private final String hoursFormat;
-    private final String daysFormat;
+    String nanosecondsFormat;
+    String millisecondsFormat;
+    String secondsFormat;
+    String minutesFormat;
+    String hoursFormat;
+    String daysFormat;
 
     @Override
     public @NotNull String serialize(@NotNull DurationUnit unit, @Range(from = 0, to = Long.MAX_VALUE) long amount) {

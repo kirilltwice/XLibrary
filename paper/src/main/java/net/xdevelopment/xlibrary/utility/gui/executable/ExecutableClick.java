@@ -1,13 +1,17 @@
 package net.xdevelopment.xlibrary.utility.gui.executable;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import net.xdevelopment.xlibrary.utility.gui.slot.MenuSlot;
 import org.bukkit.entity.Player;
 
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ExecutableClick {
 
-    private MenuSlot slot;
+    @NonFinal MenuSlot slot;
 
     public void onLeft(Player player) {
     }

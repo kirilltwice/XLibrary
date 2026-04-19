@@ -1,5 +1,7 @@
 package net.xdevelopment.xlibrary.schematic.selection;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import net.xdevelopment.xlibrary.schematic.SchematicMessages;
 import net.xdevelopment.xlibrary.utility.ColorUtility;
 import org.bukkit.Location;
@@ -11,31 +13,34 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class SelectionListener implements Listener {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public final class SelectionListener implements Listener {
 
     public static final Material WAND_MATERIAL = Material.WOODEN_AXE;
-    private final Map<UUID, PlayerSelection> selections = new HashMap<>();
+    Map<UUID, PlayerSelection> selections = new HashMap<>();
 
     @EventHandler
     public void onInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        ItemStack hand = player.getInventory().getItemInMainHand();
+        final Player player = event.getPlayer();
+        final ItemStack hand = player.getInventory().getItemInMainHand();
 
         if (hand.getType() != WAND_MATERIAL) return;
         if (!player.hasPermission("xlibrary.schematic.wand")) return;
 
-        Location clicked = event.getClickedBlock() != null
+        final Location clicked = event.getClickedBlock() != null
                 ? event.getClickedBlock().getLocation()
                 : null;
 
         if (clicked == null) return;
 
-        PlayerSelection selection = selections.computeIfAbsent(player.getUniqueId(), k -> new PlayerSelection());
+        final PlayerSelection selection = getOrCreateSelection(player);
 
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             event.setCancelled(true);
@@ -61,11 +66,13 @@ public class SelectionListener implements Listener {
         selections.remove(event.getPlayer().getUniqueId());
     }
 
-    public PlayerSelection getSelection(Player player) {
+    @Nullable
+    public PlayerSelection getSelection(@NotNull Player player) {
         return selections.get(player.getUniqueId());
     }
 
-    public PlayerSelection getOrCreateSelection(Player player) {
+    @NotNull
+    public PlayerSelection getOrCreateSelection(@NotNull Player player) {
         return selections.computeIfAbsent(player.getUniqueId(), k -> new PlayerSelection());
     }
 }

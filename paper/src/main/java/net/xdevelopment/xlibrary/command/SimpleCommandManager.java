@@ -1,16 +1,16 @@
 package net.xdevelopment.xlibrary.command;
 
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,13 +22,25 @@ import java.util.Set;
  * @author Anyachkaa
  */
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 public final class SimpleCommandManager implements CommandManager {
 
     JavaPlugin plugin;
+    @NonFinal
+    @Nullable
+    Commands registrar;
 
     Set<Command> commands = new HashSet<>();
     Map<String, Command> name2CommandMap = new HashMap<>();
+
+    public SimpleCommandManager(@NotNull JavaPlugin plugin) {
+        this.plugin = plugin;
+        plugin.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
+            registrar = event.registrar();
+            for (final Command command : commands) {
+                registerPaperCommand(command);
+            }
+        });
+    }
 
     @Override
     @Nullable
@@ -41,11 +53,13 @@ public final class SimpleCommandManager implements CommandManager {
         if (!commands.add(command)) return false;
 
         name2CommandMap.put(command.getName().toLowerCase(), command);
-        for (var alias : command.getAliases()) {
+        for (final String alias : command.getAliases()) {
             name2CommandMap.put(alias.toLowerCase(), command);
         }
 
-        Bukkit.getCommandMap().register(plugin.getName().toLowerCase(), new BukkitCommandAdapter(command));
+        if (registrar != null) {
+            registerPaperCommand(command);
+        }
         return true;
     }
 
@@ -54,7 +68,7 @@ public final class SimpleCommandManager implements CommandManager {
         if (!commands.remove(command)) return false;
 
         name2CommandMap.remove(command.getName().toLowerCase(), command);
-        for (var alias : command.getAliases()) {
+        for (final String alias : command.getAliases()) {
             name2CommandMap.remove(alias.toLowerCase(), command);
         }
 
@@ -63,12 +77,19 @@ public final class SimpleCommandManager implements CommandManager {
 
     @Override
     public boolean unregister(@NotNull String name) {
-        var command = name2CommandMap.get(name.toLowerCase());
+        final Command command = name2CommandMap.get(name.toLowerCase());
         return command != null && unregister(command);
     }
 
     @Override
-    public @NonNull @Unmodifiable List<Command> getCommands() {
+    public @NotNull @Unmodifiable List<Command> getCommands() {
         return List.copyOf(commands);
+    }
+
+    private void registerPaperCommand(@NotNull Command command) {
+        if (registrar == null) {
+            return;
+        }
+        registrar.register(command.getName(), null, command.getAliases(), new PaperCommandAdapter(command));
     }
 }

@@ -1,5 +1,5 @@
 package net.xdevelopment.xlibrary.schematic.nativeapi.data;
 
-import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
-public record WorldBlock(int dx, int dy, int dz, String blockData) {}
+public record WorldBlock(int dx, int dy, int dz, @NotNull String blockData) {}

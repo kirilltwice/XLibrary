@@ -7,13 +7,16 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.FieldDefaults;
 
 @Getter
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Paginator<T> {
 
-    private final int pageSize;
-    private final List<List<T>> pages;
+    int pageSize;
+    List<List<T>> pages;
 
     public Paginator(@NotNull Collection<T> objects, int pageSize) {
         if (pageSize <= 0) {

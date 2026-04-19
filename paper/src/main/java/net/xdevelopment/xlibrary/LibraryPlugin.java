@@ -7,26 +7,40 @@ import net.xdevelopment.xlibrary.schematic.nativeapi.NativeSchematicProvider;
 import net.xdevelopment.xlibrary.schematic.selection.SelectionListener;
 import net.xdevelopment.xlibrary.utility.gui.MenuListener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
-public class LibraryPlugin extends JavaPlugin {
-
-    private SimpleCommandManager commandManager;
+public final class LibraryPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        File schematicsFolder = new File(getDataFolder(), "schematics");
+        final File schematicsFolder = createSchematicsFolder();
+        final SelectionListener selectionListener = new SelectionListener();
+        final SchematicManager schematicManager = new SchematicManager(new NativeSchematicProvider(this));
+
+        registerListeners(selectionListener);
+        registerCommands(schematicManager, selectionListener, schematicsFolder);
+    }
+
+    @NotNull
+    private File createSchematicsFolder() {
+        final File schematicsFolder = new File(getDataFolder(), "schematics");
         schematicsFolder.mkdirs();
+        return schematicsFolder;
+    }
 
-        NativeSchematicProvider provider = new NativeSchematicProvider(this);
-        SchematicManager manager = new SchematicManager(provider);
-        SelectionListener listener = new SelectionListener();
-
-        getServer().getPluginManager().registerEvents(listener, this);
+    private void registerListeners(@NotNull SelectionListener selectionListener) {
+        getServer().getPluginManager().registerEvents(selectionListener, this);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
+    }
 
-        commandManager = new SimpleCommandManager(this);
-        commandManager.register(new SchematicCommand(manager, listener, schematicsFolder));
+    private void registerCommands(
+            @NotNull SchematicManager schematicManager,
+            @NotNull SelectionListener selectionListener,
+            @NotNull File schematicsFolder
+    ) {
+        final SimpleCommandManager commandManager = new SimpleCommandManager(this);
+        commandManager.register(new SchematicCommand(schematicManager, selectionListener, schematicsFolder));
     }
 }

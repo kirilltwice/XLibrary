@@ -3,14 +3,17 @@ package net.xdevelopment.xlibrary.core.utility;
 import org.jetbrains.annotations.NotNull;
 
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 
 @ToString
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Difference<T> {
 
     @Getter
-    private final ObjectLinkedOpenHashSet<Change<T>> changes = new ObjectLinkedOpenHashSet<>();
+    ObjectLinkedOpenHashSet<Change<T>> changes = new ObjectLinkedOpenHashSet<>();
 
     public boolean isEmpty() {
         return this.changes.isEmpty();

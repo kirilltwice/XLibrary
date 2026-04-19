@@ -1,14 +1,19 @@
 package net.xdevelopment.xlibrary.core.utility;
 
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 import it.unimi.dsi.fastutil.objects.Object2DoubleLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Randomizer<T> {
 
-    private final Object2DoubleMap<T> map = new Object2DoubleLinkedOpenHashMap<>();
-    private double sum = 0.0;
+    Object2DoubleMap<T> map = new Object2DoubleLinkedOpenHashMap<>();
+    @NonFinal double sum = 0.0;
 
     public void add(T value, double weight) {
         if (weight <= 0) {

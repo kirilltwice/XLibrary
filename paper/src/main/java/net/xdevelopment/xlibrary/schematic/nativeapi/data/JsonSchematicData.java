@@ -1,12 +1,12 @@
 package net.xdevelopment.xlibrary.schematic.nativeapi.data;
 
-import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public record JsonSchematicData(
-        JsonLocation firstPoint,
-        JsonLocation secondPoint,
-        JsonLocation midPoint,
-        List<WorldBlock> blocks
+        @NotNull JsonLocation firstPoint,
+        @NotNull JsonLocation secondPoint,
+        @NotNull JsonLocation midPoint,
+        @NotNull List<WorldBlock> blocks
 ) {}

@@ -9,9 +9,11 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -19,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class TerritorySaveTransaction {
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public final class TerritorySaveTransaction {
 
     final Plugin plugin;
     final Gson gson;
@@ -31,16 +33,22 @@ public class TerritorySaveTransaction {
     final int maxOperationsPerTick;
 
     final List<WorldBlock> collectedBlocks = new ArrayList<>();
-    int currentX;
-    int currentY;
-    int currentZ;
+    @NonFinal int currentX;
+    @NonFinal int currentY;
+    @NonFinal int currentZ;
     final int minX, minY, minZ, maxX, maxY, maxZ;
     final int midX, midY, midZ;
     final World world;
 
-    public TerritorySaveTransaction(Plugin plugin, Gson gson, File file,
-                                    Location corner1, Location corner2,
-                                    boolean ignoreAir, int maxOperationsPerTick) {
+    public TerritorySaveTransaction(
+            @NotNull Plugin plugin,
+            @NotNull Gson gson,
+            @NotNull File file,
+            @NotNull Location corner1,
+            @NotNull Location corner2,
+            boolean ignoreAir,
+            int maxOperationsPerTick
+    ) {
         this.plugin = plugin;
         this.gson = gson;
         this.file = file;
@@ -66,7 +74,7 @@ public class TerritorySaveTransaction {
         this.currentZ = minZ;
     }
 
-    public void start(CompletableFuture<File> completion) {
+    public void start(@NotNull CompletableFuture<File> completion) {
         Bukkit.getScheduler().runTask(plugin, () -> snapshotTick(completion));
     }
 
@@ -77,7 +85,7 @@ public class TerritorySaveTransaction {
             while (currentX <= maxX) {
                 while (currentY <= maxY) {
                     while (currentZ <= maxZ) {
-                        Block block = world.getBlockAt(currentX, currentY, currentZ);
+                        final Block block = world.getBlockAt(currentX, currentY, currentZ);
 
                         if (!(ignoreAir && block.getType().isAir())) {
                             collectedBlocks.add(new WorldBlock(
@@ -112,7 +120,7 @@ public class TerritorySaveTransaction {
     private void writeAsync(CompletableFuture<File> completion) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                JsonSchematicData dataModel = new JsonSchematicData(
+                final JsonSchematicData dataModel = new JsonSchematicData(
                         new JsonLocation(
                                 midX - corner1.getBlockX(),
                                 midY - corner1.getBlockY(),

@@ -3,17 +3,18 @@ package net.xdevelopment.xlibrary.utility;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.jetbrains.annotations.NotNull;
 
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ButtonUtility {
 
     @NotNull
-    Component button;
+    @NonFinal Component button;
 
     public ButtonUtility(@NotNull String buttonText) {
         this.button = Component.text(buttonText);

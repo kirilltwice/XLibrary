@@ -18,6 +18,8 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockTypes;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 import net.xdevelopment.xlibrary.schematic.SchematicProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -28,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.concurrent.CompletableFuture;
 
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FaweSchematicProvider implements SchematicProvider {
 
     @Override

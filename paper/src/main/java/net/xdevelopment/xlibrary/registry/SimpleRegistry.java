@@ -9,8 +9,8 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
-import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.Stream;

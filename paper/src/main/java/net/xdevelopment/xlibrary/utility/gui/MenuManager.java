@@ -10,7 +10,7 @@ import org.bukkit.inventory.InventoryHolder;
 
 @UtilityClass
 @SuppressWarnings("UnstableApiUsage")
-public final class MenuManager {
+public class MenuManager {
 
     public Menu create(String id, String title, int rows) {
         return new Menu(id, ColorUtility.colorize(title), rows);

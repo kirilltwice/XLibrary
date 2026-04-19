@@ -6,16 +6,19 @@ import org.jetbrains.annotations.Nullable;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import net.xdevelopment.xlibrary.core.utility.Pair;
 
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ExpiringMap<K, V> {
 
     @Getter
-    private final long expireMillis;
-    private final Long2ObjectMap<Pair<K, V>> map = new Long2ObjectOpenHashMap<>();
+    long expireMillis;
+    Long2ObjectMap<Pair<K, V>> map = new Long2ObjectOpenHashMap<>();
 
     @Nullable
     public V get(@Nullable Object key) {

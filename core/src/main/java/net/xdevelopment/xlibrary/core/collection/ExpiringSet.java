@@ -8,11 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
 import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public final class ExpiringSet<E> extends AbstractSet<E> implements Set<E> {
 
-    private final long expireMillis;
-    private final Object2LongMap<E> map = new Object2LongOpenHashMap<>();
+    long expireMillis;
+    Object2LongMap<E> map = new Object2LongOpenHashMap<>();
 
     public ExpiringSet(long expireMillis) {
         this.expireMillis = expireMillis;

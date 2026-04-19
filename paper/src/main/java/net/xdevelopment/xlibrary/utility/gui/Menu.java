@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import net.kyori.adventure.text.Component;
 import net.xdevelopment.xlibrary.utility.gui.executable.ExecutableClose;
 import net.xdevelopment.xlibrary.utility.gui.slot.MenuSlot;
@@ -21,18 +22,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 @Getter
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Menu implements InventoryHolder, Identifiable {
     
-    final String menuId;
-    final UUID uniqueId = generateUniqueId();
-    Component title;
-    final Inventory inventory;
-    final Int2ObjectMap<MenuSlot> slots = new Int2ObjectOpenHashMap<>();
+    String menuId;
+    UUID uniqueId = generateUniqueId();
+    @NonFinal Component title;
+    Inventory inventory;
+    Int2ObjectMap<MenuSlot> slots = new Int2ObjectOpenHashMap<>();
     @Setter
-    boolean interactDisabled = true;
+    @NonFinal boolean interactDisabled = true;
     @Setter
-    ExecutableClose executableClose;
+    @NonFinal ExecutableClose executableClose;
 
     public Menu(String id, String title, int rows) {
         this(id, Component.text(title), rows);
