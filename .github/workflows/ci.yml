@@ -14,10 +14,18 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: gradle
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Upload JAR artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: xlibrary-jars
+          path: |
+            */build/libs/*-all.jar
+          if-no-files-found: error
       - name: Create GitHub Release
         if: startsWith(github.event.head_commit.message, 'feat') || startsWith(github.event.head_commit.message, 'fix') || startsWith(github.event.head_commit.message, 'update') || startsWith(github.event.head_commit.message, 'release')
         uses: softprops/action-gh-release@v2
@@ -29,4 +37,4 @@ jobs:
             This release was automatically created by GitHub Actions.
             Commit: ${{ github.event.head_commit.message }}
           files: |
-            output/*.jar
+            */build/libs/*-all.jar

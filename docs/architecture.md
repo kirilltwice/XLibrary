@@ -5,7 +5,6 @@ The XLibrary project is divided into modules to ensure maximum reusability of co
 ## Application Module: `core`
 The **Core** module does not contain any Bukkit/Paper classes. It contains exclusively pure Java components:
 - **Collections** (`ExpiringSet`, etc.)
-- **Pipelines** for lifecycle management
 - Basic interfaces (`Identifiable`)
 
 ## Environment Module: `paper`

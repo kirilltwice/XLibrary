@@ -11,7 +11,7 @@ hero:
       link: /getting-started
     - theme: alt
       text: View API Docs
-      link: /core/pipelines
+      link: /paper/commands
 
 features:
   - title: Command API
